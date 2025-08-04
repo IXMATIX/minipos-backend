@@ -1,4 +1,3 @@
-// src/sales/sales.controller.ts
 import {
   Controller,
   Get,
@@ -16,27 +15,51 @@ import { CreateSaleDto } from './dto/create-sale.dto';
 import { UpdateSaleDto } from './dto/update-sale.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { RequestWithUser } from 'src/common/interfaces/request-with-user.interface';
+import { ApiResponse, ApiTags } from '@nestjs/swagger';
+import { SaleResponseDto } from './dto/sale-response.dto';
+import { DeleteSaleResponseDto } from './dto/delete-sale-response.dto';
 
+@ApiTags('sales')
 @UseGuards(JwtAuthGuard)
 @Controller('sales')
 export class SalesController {
   constructor(private readonly salesService: SalesService) {}
 
+  @ApiResponse({
+    status: 201,
+    description: 'Sale created successfully',
+    type: SaleResponseDto,
+  })
   @Post()
   create(@Body() createSaleDto: CreateSaleDto, @Req() req: RequestWithUser) {
     return this.salesService.create(createSaleDto, req.user.id);
   }
 
+  @ApiResponse({
+    status: 200,
+    description: 'List of user sales',
+    type: [SaleResponseDto],
+  })
   @Get()
   findAll(@Req() req: RequestWithUser) {
     return this.salesService.findAllByUser(req.user.id);
   }
 
+  @ApiResponse({
+    status: 200,
+    description: 'Sale retrieved successfully',
+    type: SaleResponseDto,
+  })
   @Get(':id')
   findOne(@Param('id', ParseIntPipe) id: number, @Req() req: RequestWithUser) {
     return this.salesService.findOne(id, req.user.id);
   }
 
+  @ApiResponse({
+    status: 200,
+    description: 'Sale updated successfully',
+    type: SaleResponseDto,
+  })
   @Put(':id')
   update(
     @Param('id', ParseIntPipe) id: number,
@@ -46,6 +69,11 @@ export class SalesController {
     return this.salesService.update(id, updateSaleDto, req.user.id);
   }
 
+  @ApiResponse({
+    status: 200,
+    description: 'Sale deleted successfully',
+    type: DeleteSaleResponseDto,
+  })
   @Delete(':id')
   async remove(
     @Param('id', ParseIntPipe) id: number,
