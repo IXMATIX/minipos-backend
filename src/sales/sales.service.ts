@@ -12,11 +12,10 @@ export class SalesService {
     @InjectRepository(Sale)
     private salesRepository: Repository<Sale>,
 
-    private readonly usersService: UsersService, // Inyectamos UsersService
+    private readonly usersService: UsersService,
   ) {}
 
   async create(createSaleDto: CreateSaleDto, userId: number): Promise<Sale> {
-    // Validar que usuario exista
     await this.usersService.findById(userId);
 
     const sale = this.salesRepository.create({
