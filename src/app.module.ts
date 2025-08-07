@@ -7,6 +7,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
 import { dataSourceOptions } from './db/datasource';
 import { SalesModule } from './sales/sales.module';
+import { ExpensesModule } from './expenses/expenses.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { SalesModule } from './sales/sales.module';
     UsersModule,
     AuthModule,
     SalesModule,
+    ExpensesModule,
   ],
   controllers: [AppController],
   providers: [AppService],
