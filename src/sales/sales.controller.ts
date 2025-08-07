@@ -6,21 +6,21 @@ import {
   Param,
   Delete,
   Put,
-  UseGuards,
   Req,
   ParseIntPipe,
 } from '@nestjs/common';
 import { SalesService } from './sales.service';
 import { CreateSaleDto } from './dto/create-sale.dto';
 import { UpdateSaleDto } from './dto/update-sale.dto';
-import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+
 import { RequestWithUser } from 'src/common/interfaces/request-with-user.interface';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
 import { SaleResponseDto } from './dto/sale-response.dto';
 import { DeleteSaleResponseDto } from './dto/delete-sale-response.dto';
+import { Auth } from 'src/auth/auth.decorator';
 
 @ApiTags('sales')
-@UseGuards(JwtAuthGuard)
+@Auth()
 @Controller('sales')
 export class SalesController {
   constructor(private readonly salesService: SalesService) {}
