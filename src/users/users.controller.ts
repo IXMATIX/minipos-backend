@@ -8,7 +8,7 @@ import { AuthResponseDto } from '../auth/dto/auth-response.dto';
 
 import { plainToInstance } from 'class-transformer';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
-import { ApiResponse } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiResponse } from '@nestjs/swagger';
 
 @Controller('users')
 export class UsersController {
@@ -23,6 +23,7 @@ export class UsersController {
     type: UserResponseDto,
   })
   @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('jwt-auth')
   @Get('me')
   async getCurrentUser(
     @Req() req: { user: { id: string } },
