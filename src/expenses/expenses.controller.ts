@@ -51,7 +51,10 @@ export class ExpensesController {
       endDate,
     });
   }
-
+  @Get('latest')
+  findLatest(@Req() req: RequestWithUser, @Query('limit') limit?: number) {
+    return this.expensesService.findLatestByUser(req.user.id, limit);
+  }
   @ApiResponse({
     status: 200,
     description: 'Expense found',
