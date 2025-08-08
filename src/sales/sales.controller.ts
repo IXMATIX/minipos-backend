@@ -55,6 +55,16 @@ export class SalesController {
 
   @ApiResponse({
     status: 200,
+    description: 'Latest sales by user',
+    type: [SaleResponseDto],
+  })
+  @Get('latest')
+  getLatestSales(@Req() req: RequestWithUser, @Query('limit') limit?: number) {
+    return this.salesService.findLatestByUser(req.user.id, limit);
+  }
+
+  @ApiResponse({
+    status: 200,
     description: 'Sale retrieved successfully',
     type: SaleResponseDto,
   })
