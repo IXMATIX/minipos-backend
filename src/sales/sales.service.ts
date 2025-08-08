@@ -1,6 +1,12 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import {
+  Between,
+  FindOptionsWhere,
+  LessThanOrEqual,
+  MoreThanOrEqual,
+  Repository,
+} from 'typeorm';
 import { Sale } from './entities/sale.entity';
 import { CreateSaleDto } from './dto/create-sale.dto';
 import { UpdateSaleDto } from './dto/update-sale.dto';
@@ -25,8 +31,26 @@ export class SalesService {
     return this.salesRepository.save(sale);
   }
 
-  async findAllByUser(userId: number): Promise<Sale[]> {
-    return this.salesRepository.find({ where: { user_id: userId } });
+  async findAllByUser(params: {
+    userId: number;
+    startDate?: string;
+    endDate?: string;
+  }) {
+    const { userId, startDate, endDate } = params;
+
+    const where: FindOptionsWhere<Sale> = {
+      user: { id: userId },
+    };
+
+    if (startDate && endDate) {
+      where.date = Between(startDate, endDate);
+    } else if (startDate) {
+      where.date = MoreThanOrEqual(startDate);
+    } else if (endDate) {
+      where.date = LessThanOrEqual(endDate);
+    }
+
+    return this.salesRepository.find({ where });
   }
 
   async findOne(id: number, userId: number): Promise<Sale> {
