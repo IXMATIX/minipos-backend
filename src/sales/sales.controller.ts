@@ -8,6 +8,7 @@ import {
   Put,
   Req,
   ParseIntPipe,
+  Query,
 } from '@nestjs/common';
 import { SalesService } from './sales.service';
 import { CreateSaleDto } from './dto/create-sale.dto';
@@ -18,6 +19,7 @@ import { ApiResponse, ApiTags } from '@nestjs/swagger';
 import { SaleResponseDto } from './dto/sale-response.dto';
 import { DeleteSaleResponseDto } from './dto/delete-sale-response.dto';
 import { Auth } from 'src/auth/auth.decorator';
+import { FilterSalesDto } from './dto/filter-sales.dto';
 
 @ApiTags('sales')
 @Auth()
@@ -41,8 +43,14 @@ export class SalesController {
     type: [SaleResponseDto],
   })
   @Get()
-  findAll(@Req() req: RequestWithUser) {
-    return this.salesService.findAllByUser(req.user.id);
+  findAll(@Req() req: RequestWithUser, @Query() query: FilterSalesDto) {
+    const { startDate, endDate } = query;
+
+    return this.salesService.findAllByUser({
+      userId: req.user.id,
+      startDate,
+      endDate,
+    });
   }
 
   @ApiResponse({
