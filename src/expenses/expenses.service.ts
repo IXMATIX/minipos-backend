@@ -70,6 +70,14 @@ export class ExpensesService {
     return expense;
   }
 
+  async findLatestByUser(userId: number, limit = 10) {
+    return this.expenseRepository.find({
+      where: { user: { id: userId } },
+      order: { date: 'DESC' },
+      take: limit,
+    });
+  }
+
   async update(params: {
     id: number;
     updateExpenseDto: UpdateExpenseDto;
