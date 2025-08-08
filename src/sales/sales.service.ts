@@ -53,6 +53,13 @@ export class SalesService {
     return this.salesRepository.find({ where });
   }
 
+  async findLatestByUser(userId: number, limit = 10) {
+    return this.salesRepository.find({
+      where: { user: { id: userId } },
+      order: { date: 'DESC' },
+      take: limit,
+    });
+  }
   async findOne(id: number, userId: number): Promise<Sale> {
     const sale = await this.salesRepository.findOne({
       where: { id, user_id: userId },
