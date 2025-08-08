@@ -6,6 +6,7 @@ import { UsersService } from '../users/users.service';
 import { NotFoundException } from '@nestjs/common';
 import { CreateSaleDto } from './dto/create-sale.dto';
 import { UpdateSaleDto } from './dto/update-sale.dto';
+import { Between, MoreThanOrEqual } from 'typeorm';
 
 const mockSaleRepository = () => ({
   create: jest.fn(),
@@ -72,15 +73,52 @@ describe('SalesService', () => {
 
   it('should return all sales by user', async () => {
     const userId = 1;
-    const sales = [{ id: 1, user_id: userId }];
+    const sales = [{ id: 1, user: { id: userId } }];
 
     salesRepository.find.mockResolvedValue(sales);
 
-    const result = await service.findAllByUser(userId);
+    const result = await service.findAllByUser({ userId });
 
     expect(result).toEqual(sales);
     expect(salesRepository.find).toHaveBeenCalledWith({
-      where: { user_id: userId },
+      where: { user: { id: userId } },
+    });
+  });
+
+  it('should return sales by user filtered by date range', async () => {
+    const userId = 1;
+    const startDate = '2025-08-01';
+    const endDate = '2025-08-08';
+    const sales = [{ id: 1, user: { id: userId }, date: '2025-08-05' }];
+
+    salesRepository.find.mockResolvedValue(sales);
+
+    const result = await service.findAllByUser({ userId, startDate, endDate });
+
+    expect(result).toEqual(sales);
+    expect(salesRepository.find).toHaveBeenCalledWith({
+      where: {
+        user: { id: userId },
+        date: Between(startDate, endDate),
+      },
+    });
+  });
+
+  it('should return sales by user filtered by startDate only', async () => {
+    const userId = 1;
+    const startDate = '2025-08-01';
+    const sales = [{ id: 2, user: { id: userId }, date: '2025-08-02' }];
+
+    salesRepository.find.mockResolvedValue(sales);
+
+    const result = await service.findAllByUser({ userId, startDate });
+
+    expect(result).toEqual(sales);
+    expect(salesRepository.find).toHaveBeenCalledWith({
+      where: {
+        user: { id: userId },
+        date: MoreThanOrEqual(startDate),
+      },
     });
   });
 
