@@ -122,6 +122,27 @@ describe('SalesService', () => {
     });
   });
 
+  it('should return latest sales by user', async () => {
+    const userId = 1;
+    const limit = 5;
+    const sales = [
+      { id: 10, date: '2025-08-08', user: { id: userId } },
+      { id: 9, date: '2025-08-07', user: { id: userId } },
+      { id: 8, date: '2025-08-06', user: { id: userId } },
+    ];
+
+    salesRepository.find.mockResolvedValue(sales);
+
+    const result = await service.findLatestByUser(userId, limit);
+
+    expect(result).toEqual(sales);
+    expect(salesRepository.find).toHaveBeenCalledWith({
+      where: { user: { id: userId } },
+      order: { date: 'DESC' },
+      take: limit,
+    });
+  });
+
   it('should return a sale if found', async () => {
     const sale = { id: 1, user_id: 1 };
     salesRepository.findOne.mockResolvedValue(sale);
