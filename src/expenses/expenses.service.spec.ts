@@ -190,6 +190,27 @@ describe('ExpensesService', () => {
     expect(mockExpenseRepository.delete).not.toHaveBeenCalled();
   });
 
+  it('should return latest expenses by user', async () => {
+    const userId = 1;
+    const limit = 5;
+    const expenses = [
+      { id: 10, date: '2025-08-08', user: { id: userId } },
+      { id: 9, date: '2025-08-07', user: { id: userId } },
+      { id: 8, date: '2025-08-06', user: { id: userId } },
+    ];
+
+    mockExpenseRepository.find.mockResolvedValue(expenses);
+
+    const result = await service.findLatestByUser(userId, limit);
+
+    expect(result).toEqual(expenses);
+    expect(mockExpenseRepository.find).toHaveBeenCalledWith({
+      where: { user: { id: userId } },
+      order: { date: 'DESC' },
+      take: limit,
+    });
+  });
+
   it('should filter expenses by date range', async () => {
     const startDate = '2023-01-01';
     const endDate = '2023-01-31';
