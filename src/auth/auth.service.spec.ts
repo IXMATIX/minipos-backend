@@ -13,6 +13,8 @@ const mockUser: User = {
   password: 'hashedpassword',
   createdAt: new Date(),
   updatedAt: new Date(),
+  sales: [],
+  expenses: [],
 };
 
 describe('AuthService', () => {

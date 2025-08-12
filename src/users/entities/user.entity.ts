@@ -1,11 +1,13 @@
+import { Expense } from 'src/expenses/entities/expense.entity';
+import { Sale } from '../../sales/entities/sale.entity';
 import {
   Entity,
   PrimaryGeneratedColumn,
   Column,
+  OneToMany,
   CreateDateColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { Exclude } from 'class-transformer';
 
 @Entity('users')
 export class User {
@@ -23,4 +25,10 @@ export class User {
 
   @UpdateDateColumn({ name: 'updated_at' })
   updatedAt: Date;
+
+  @OneToMany(() => Sale, (sale) => sale.user)
+  sales: Sale[];
+
+  @OneToMany(() => Expense, (expense) => expense.user)
+  expenses: Expense[];
 }
