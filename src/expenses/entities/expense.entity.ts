@@ -21,8 +21,8 @@ export class Expense {
   @Column()
   description: string;
 
-  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
-  date: Date;
+  @Column({ type: 'date' })
+  date: string;
 
   @ManyToOne(() => User, (user) => user.expenses, {
     eager: false,
