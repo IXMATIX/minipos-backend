@@ -14,6 +14,7 @@ const mockUser: User = {
   createdAt: new Date(),
   updatedAt: new Date(),
   sales: [],
+  expenses: [],
 };
 
 describe('AuthService', () => {
