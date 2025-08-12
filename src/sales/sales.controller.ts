@@ -6,21 +6,23 @@ import {
   Param,
   Delete,
   Put,
-  UseGuards,
   Req,
   ParseIntPipe,
+  Query,
 } from '@nestjs/common';
 import { SalesService } from './sales.service';
 import { CreateSaleDto } from './dto/create-sale.dto';
 import { UpdateSaleDto } from './dto/update-sale.dto';
-import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+
 import { RequestWithUser } from 'src/common/interfaces/request-with-user.interface';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
 import { SaleResponseDto } from './dto/sale-response.dto';
 import { DeleteSaleResponseDto } from './dto/delete-sale-response.dto';
+import { Auth } from 'src/auth/auth.decorator';
+import { FilterSalesDto } from './dto/filter-sales.dto';
 
 @ApiTags('sales')
-@UseGuards(JwtAuthGuard)
+@Auth()
 @Controller('sales')
 export class SalesController {
   constructor(private readonly salesService: SalesService) {}
@@ -41,8 +43,24 @@ export class SalesController {
     type: [SaleResponseDto],
   })
   @Get()
-  findAll(@Req() req: RequestWithUser) {
-    return this.salesService.findAllByUser(req.user.id);
+  findAll(@Req() req: RequestWithUser, @Query() query: FilterSalesDto) {
+    const { startDate, endDate } = query;
+
+    return this.salesService.findAllByUser({
+      userId: req.user.id,
+      startDate,
+      endDate,
+    });
+  }
+
+  @ApiResponse({
+    status: 200,
+    description: 'Latest sales by user',
+    type: [SaleResponseDto],
+  })
+  @Get('latest')
+  getLatestSales(@Req() req: RequestWithUser, @Query('limit') limit?: number) {
+    return this.salesService.findLatestByUser(req.user.id, limit);
   }
 
   @ApiResponse({
