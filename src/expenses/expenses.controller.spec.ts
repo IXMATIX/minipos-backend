@@ -13,6 +13,7 @@ const mockExpenseService = {
   findAll: jest.fn(),
   update: jest.fn(),
   remove: jest.fn(),
+  findLatestByUser: jest.fn(),
 };
 
 const mockRequest = {
@@ -86,6 +87,22 @@ describe('ExpensesController', () => {
     expect(mockExpenseService.create).toHaveBeenCalledWith(
       createExpenseDto,
       mockRequest.user.id,
+    );
+  });
+
+  it('should return latest expenses', async () => {
+    // ARRANGE
+    const result = [{ id: 1, total: 100, description: 'Test Expense' }];
+    mockExpenseService.findLatestByUser.mockResolvedValue(result);
+
+    // ACT
+    const response = await controller.findLatest(mockRequest, 5);
+
+    // ASSERT
+    expect(response).toEqual(result);
+    expect(mockExpenseService.findLatestByUser).toHaveBeenCalledWith(
+      mockRequest.user.id,
+      5,
     );
   });
 
