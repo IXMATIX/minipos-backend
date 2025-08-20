@@ -55,11 +55,11 @@ export class ExpensesService {
     };
 
     if (startDate && endDate) {
-      where.date = Between(new Date(startDate), new Date(endDate));
+      where.date = Between(startDate, endDate);
     } else if (startDate) {
-      where.date = MoreThanOrEqual(new Date(startDate));
+      where.date = MoreThanOrEqual(startDate);
     } else if (endDate) {
-      where.date = LessThanOrEqual(new Date(endDate));
+      where.date = LessThanOrEqual(endDate);
     }
 
     return this.expenseRepository.find({ where });

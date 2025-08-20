@@ -21,5 +21,5 @@ export class CreateExpenseDto {
     description: 'Date of the expense',
   })
   @IsDateString()
-  date: Date;
+  date: string;
 }

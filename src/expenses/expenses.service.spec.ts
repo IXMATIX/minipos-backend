@@ -48,7 +48,7 @@ describe('ExpensesService', () => {
   });
 
   it('should create and return the new expense', async () => {
-    const dto = { total: 100, description: 'Test Expense', date: new Date() };
+    const dto = { total: 100, description: 'Test Expense', date: '2025-08-20' };
     const user = { id: 1, email: 'test@example.com' };
     const savedExpense = { id: 10, ...dto, user };
 
@@ -75,7 +75,7 @@ describe('ExpensesService', () => {
 
     await expect(
       service.create(
-        { total: 100, description: 'Test Expense', date: new Date() },
+        { total: 100, description: 'Test Expense', date: '2025-08-20' },
         999,
       ),
     ).rejects.toThrow(NotFoundException);
@@ -216,8 +216,8 @@ describe('ExpensesService', () => {
     const endDate = '2023-01-31';
     const userId = 1;
     const expenses = [
-      { id: 1, date: new Date('2023-01-15'), user: { id: userId } },
-      { id: 2, date: new Date('2023-01-20'), user: { id: userId } },
+      { id: 1, date: '2023-01-15', user: { id: userId } },
+      { id: 2, date: '2023-01-20', user: { id: userId } },
     ];
 
     mockExpenseRepository.find.mockResolvedValue(expenses);
@@ -231,7 +231,7 @@ describe('ExpensesService', () => {
     expect(mockExpenseRepository.find).toHaveBeenCalledWith({
       where: {
         user: { id: userId },
-        date: Between(new Date(startDate), new Date(endDate)),
+        date: Between(startDate, endDate),
       },
     });
     expect(result).toEqual(expenses);
@@ -241,8 +241,8 @@ describe('ExpensesService', () => {
     const startDate = '2023-01-01';
     const userId = 1;
     const expenses = [
-      { id: 1, date: new Date('2023-01-15'), user: { id: userId } },
-      { id: 2, date: new Date('2023-01-20'), user: { id: userId } },
+      { id: 1, date: '2023-01-15', user: { id: userId } },
+      { id: 2, date: '2023-01-20', user: { id: userId } },
     ];
 
     mockExpenseRepository.find.mockResolvedValue(expenses);
@@ -255,7 +255,7 @@ describe('ExpensesService', () => {
     expect(mockExpenseRepository.find).toHaveBeenCalledWith({
       where: {
         user: { id: userId },
-        date: MoreThanOrEqual(new Date(startDate)),
+        date: MoreThanOrEqual(startDate),
       },
     });
     expect(result).toEqual(expenses);
@@ -265,8 +265,8 @@ describe('ExpensesService', () => {
     const endDate = '2023-01-31';
     const userId = 1;
     const expenses = [
-      { id: 1, date: new Date('2023-01-15'), user: { id: userId } },
-      { id: 2, date: new Date('2023-01-20'), user: { id: userId } },
+      { id: 1, date: '2023-01-15', user: { id: userId } },
+      { id: 2, date:'2023-01-20', user: { id: userId } },
     ];
 
     mockExpenseRepository.find.mockResolvedValue(expenses);
@@ -279,7 +279,7 @@ describe('ExpensesService', () => {
     expect(mockExpenseRepository.find).toHaveBeenCalledWith({
       where: {
         user: { id: userId },
-        date: LessThanOrEqual(new Date(endDate)),
+        date: LessThanOrEqual(endDate),
       },
     });
     expect(result).toEqual(expenses);
@@ -301,7 +301,7 @@ describe('ExpensesService', () => {
     expect(mockExpenseRepository.find).toHaveBeenCalledWith({
       where: {
         user: { id: userId },
-        date: Between(new Date(startDate), new Date(endDate)),
+        date: Between(startDate, endDate),
       },
     });
     expect(result).toEqual([]);

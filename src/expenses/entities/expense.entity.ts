@@ -15,14 +15,22 @@ export class Expense {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ type: 'decimal', precision: 10, scale: 2 })
+  @Column({
+    type: 'decimal',
+    precision: 10,
+    scale: 2,
+    transformer: {
+      to: (value: number) => value,
+      from: (value: string) => parseFloat(value),
+    },
+  })
   total: number;
 
   @Column()
   description: string;
 
-  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
-  date: Date;
+  @Column({ type: 'date' })
+  date: string;
 
   @ManyToOne(() => User, (user) => user.expenses, {
     eager: false,
