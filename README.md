@@ -10,17 +10,6 @@ The project is designed to be scalable, with database migrations and database ad
 
 ---
 
-## 🚀 Tech Stack
-
-- [NestJS](https://nestjs.com/) – Node.js Framework
-- [TypeORM](https://typeorm.io/) – ORM for PostgreSQL
-- [Swagger](https://swagger.io/) – API Documentation
-- [PostgreSQL](https://www.postgresql.org/) – Relational Database
-- [pgAdmin](https://www.pgadmin.org/) – PostgreSQL GUI
-- [Docker & Docker Compose](https://www.docker.com/) – Containerization
-
----
-
 ## ⚙️ Setup
 
 ### 1️⃣ Clone the repository
