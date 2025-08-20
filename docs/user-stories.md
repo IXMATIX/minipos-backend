@@ -1,4 +1,3 @@
-```markdown
 # Backend User Stories - miniPOS API
 
 ## 🧱 Initial Project Setup
