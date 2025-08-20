@@ -14,7 +14,7 @@ The project is designed to be scalable, with database migrations and database ad
 
 ### 1️⃣ Clone the repository
 ```bash
-git clone https://github.com/your-username/minipos-api.git
+git clone org-41710699@github.com:IXMATIX/minipos-backend.git
 cd minipos-api
 ```
 ---
