@@ -49,7 +49,7 @@ describe('ExpensesController', () => {
     const createExpenseDto = {
       total: 100,
       description: 'Test Expense',
-      date: fixedDate,
+      date: '2025-08-20',
     };
     const result = { id: 1, ...createExpenseDto };
     mockExpenseService.create.mockResolvedValue(result);
@@ -70,7 +70,7 @@ describe('ExpensesController', () => {
     const createExpenseDto = {
       total: 100,
       description: 'Test Expense',
-      date: new Date(),
+      date: '2025-08-20',
       user: {
         id: 999,
       },
