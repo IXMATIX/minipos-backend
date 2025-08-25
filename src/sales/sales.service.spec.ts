@@ -14,6 +14,7 @@ const mockSaleRepository = () => ({
   find: jest.fn(),
   findOne: jest.fn(),
   remove: jest.fn(),
+  findAndCount: jest.fn(),
 });
 
 const mockUsersService = () => ({
@@ -75,13 +76,21 @@ describe('SalesService', () => {
     const userId = 1;
     const sales = [{ id: 1, user: { id: userId } }];
 
-    salesRepository.find.mockResolvedValue(sales);
+    salesRepository.findAndCount.mockResolvedValue([sales, sales.length]);
 
     const result = await service.findAllByUser({ userId });
 
-    expect(result).toEqual(sales);
-    expect(salesRepository.find).toHaveBeenCalledWith({
+    expect(result).toEqual({
+      total: sales.length,
+      limit: 10,
+      offset: 0,
+      items: sales,
+    });
+    expect(salesRepository.findAndCount).toHaveBeenCalledWith({
       where: { user: { id: userId } },
+      take: 10,
+      skip: 0,
+      order: { date: 'DESC' },
     });
   });
 
@@ -91,16 +100,24 @@ describe('SalesService', () => {
     const endDate = '2025-08-08';
     const sales = [{ id: 1, user: { id: userId }, date: '2025-08-05' }];
 
-    salesRepository.find.mockResolvedValue(sales);
+    salesRepository.findAndCount.mockResolvedValue([sales, sales.length]);
 
     const result = await service.findAllByUser({ userId, startDate, endDate });
 
-    expect(result).toEqual(sales);
-    expect(salesRepository.find).toHaveBeenCalledWith({
+    expect(result).toEqual({
+      total: sales.length,
+      limit: 10,
+      offset: 0,
+      items: sales,
+    });
+    expect(salesRepository.findAndCount).toHaveBeenCalledWith({
       where: {
         user: { id: userId },
         date: Between(startDate, endDate),
       },
+      take: 10,
+      skip: 0,
+      order: { date: 'DESC' },
     });
   });
 
@@ -109,16 +126,24 @@ describe('SalesService', () => {
     const startDate = '2025-08-01';
     const sales = [{ id: 2, user: { id: userId }, date: '2025-08-02' }];
 
-    salesRepository.find.mockResolvedValue(sales);
+    salesRepository.findAndCount.mockResolvedValue([sales, sales.length]);
 
     const result = await service.findAllByUser({ userId, startDate });
 
-    expect(result).toEqual(sales);
-    expect(salesRepository.find).toHaveBeenCalledWith({
+    expect(result).toEqual({
+      total: sales.length,
+      limit: 10,
+      offset: 0,
+      items: sales,
+    });
+    expect(salesRepository.findAndCount).toHaveBeenCalledWith({
       where: {
         user: { id: userId },
         date: MoreThanOrEqual(startDate),
       },
+      take: 10,
+      skip: 0,
+      order: { date: 'DESC' },
     });
   });
 
