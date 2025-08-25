@@ -8,6 +8,7 @@ import { ConfigModule } from '@nestjs/config';
 import { dataSourceOptions } from './db/datasource';
 import { SalesModule } from './sales/sales.module';
 import { ExpensesModule } from './expenses/expenses.module';
+import { PaginationModule } from './pagination/pagination.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { ExpensesModule } from './expenses/expenses.module';
     AuthModule,
     SalesModule,
     ExpensesModule,
+    PaginationModule,
   ],
   controllers: [AppController],
   providers: [AppService],
