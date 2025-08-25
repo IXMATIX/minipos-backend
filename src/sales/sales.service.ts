@@ -35,8 +35,10 @@ export class SalesService {
     userId: number;
     startDate?: string;
     endDate?: string;
+    limit?: number;
+    offset?: number;
   }) {
-    const { userId, startDate, endDate } = params;
+    const { userId, startDate, endDate, limit = 10, offset = 0 } = params;
 
     const where: FindOptionsWhere<Sale> = {
       user: { id: userId },
@@ -50,7 +52,19 @@ export class SalesService {
       where.date = LessThanOrEqual(endDate);
     }
 
-    return this.salesRepository.find({ where });
+    const [items, total] = await this.salesRepository.findAndCount({
+      where,
+      take: limit,
+      skip: offset,
+      order: { date: 'DESC' },
+    });
+
+    return {
+      total,
+      limit,
+      offset,
+      items,
+    };
   }
 
   async findLatestByUser(userId: number, limit = 10) {
