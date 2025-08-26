@@ -70,10 +70,7 @@ describe('SalesController', () => {
       startDate: '2025-08-01',
       endDate: '2025-08-08',
     };
-    const pagination: PaginationDto = {
-      limit: 10,
-      offset: 0,
-    };
+    const pagination: PaginationDto = { page: 1, size: 10 };
     const result = [{ id: 1, total: 100, description: 'Test Sale' }];
     mockSalesService.findAllByUser.mockResolvedValue(result);
 
@@ -84,8 +81,8 @@ describe('SalesController', () => {
       userId: mockRequest.user.id,
       startDate: filter.startDate,
       endDate: filter.endDate,
-      limit: pagination.limit,
-      offset: pagination.offset,
+      page: pagination.page,
+      size: pagination.size,
     });
   });
 

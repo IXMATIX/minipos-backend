@@ -81,11 +81,19 @@ describe('SalesService', () => {
     const result = await service.findAllByUser({ userId });
 
     expect(result).toEqual({
-      total: sales.length,
-      limit: 10,
-      offset: 0,
-      items: sales,
+      data: sales,
+      pagination: {
+        current_page: 1,
+        page_size: 10,
+        total_records: sales.length,
+        total_pages: 1,
+        has_next: false,
+        has_prev: false,
+        next_page: null,
+        prev_page: null,
+      },
     });
+
     expect(salesRepository.findAndCount).toHaveBeenCalledWith({
       where: { user: { id: userId } },
       take: 10,
@@ -105,11 +113,19 @@ describe('SalesService', () => {
     const result = await service.findAllByUser({ userId, startDate, endDate });
 
     expect(result).toEqual({
-      total: sales.length,
-      limit: 10,
-      offset: 0,
-      items: sales,
+      data: sales,
+      pagination: {
+        current_page: 1,
+        page_size: 10,
+        total_records: sales.length,
+        total_pages: 1,
+        has_next: false,
+        has_prev: false,
+        next_page: null,
+        prev_page: null,
+      },
     });
+
     expect(salesRepository.findAndCount).toHaveBeenCalledWith({
       where: {
         user: { id: userId },
@@ -131,11 +147,19 @@ describe('SalesService', () => {
     const result = await service.findAllByUser({ userId, startDate });
 
     expect(result).toEqual({
-      total: sales.length,
-      limit: 10,
-      offset: 0,
-      items: sales,
+      data: sales,
+      pagination: {
+        current_page: 1,
+        page_size: 10,
+        total_records: sales.length,
+        total_pages: 1,
+        has_next: false,
+        has_prev: false,
+        next_page: null,
+        prev_page: null,
+      },
     });
+
     expect(salesRepository.findAndCount).toHaveBeenCalledWith({
       where: {
         user: { id: userId },
