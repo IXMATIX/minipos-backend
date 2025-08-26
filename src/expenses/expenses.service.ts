@@ -47,8 +47,10 @@ export class ExpensesService {
     userId: number;
     startDate?: string;
     endDate?: string;
+    page?: number;
+    size?: number;
   }) {
-    const { userId, startDate, endDate } = params;
+    const { userId, startDate, endDate, page = 1, size = 10 } = params;
 
     const where: FindOptionsWhere<Expense> = {
       user: { id: userId },
@@ -62,7 +64,28 @@ export class ExpensesService {
       where.date = LessThanOrEqual(endDate);
     }
 
-    return this.expenseRepository.find({ where });
+    const [rows, total] = await this.expenseRepository.findAndCount({
+      where,
+      order: { id: 'DESC' },
+      take: size,
+      skip: (page - 1) * size,
+    });
+
+    const totalPages = Math.ceil(total / size);
+
+    return {
+      data: rows,
+      pagination: {
+        current_page: page,
+        page_size: size,
+        total_records: total,
+        total_pages: totalPages,
+        next_page: page < totalPages ? page + 1 : null,
+        prev_page: page > 1 ? page - 1 : null,
+        has_next: page < totalPages,
+        has_prev: page > 1,
+      },
+    };
   }
 
   async findOne(id: number, userId: number) {

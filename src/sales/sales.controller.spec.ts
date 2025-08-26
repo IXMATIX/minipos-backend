@@ -6,6 +6,7 @@ import { CreateSaleDto } from './dto/create-sale.dto';
 import { UpdateSaleDto } from './dto/update-sale.dto';
 import { FilterSalesDto } from './dto/filter-sales.dto';
 import { NotFoundException, ForbiddenException } from '@nestjs/common';
+import { PaginationDto } from '../pagination/dto/pagination.dto';
 
 const mockSalesService = {
   create: jest.fn(),
@@ -69,16 +70,19 @@ describe('SalesController', () => {
       startDate: '2025-08-01',
       endDate: '2025-08-08',
     };
+    const pagination: PaginationDto = { page: 1, size: 10 };
     const result = [{ id: 1, total: 100, description: 'Test Sale' }];
     mockSalesService.findAllByUser.mockResolvedValue(result);
 
-    const response = await controller.findAll(mockRequest, filter);
+    const response = await controller.findAll(mockRequest, filter, pagination);
 
     expect(response).toEqual(result);
     expect(mockSalesService.findAllByUser).toHaveBeenCalledWith({
       userId: mockRequest.user.id,
       startDate: filter.startDate,
       endDate: filter.endDate,
+      page: pagination.page,
+      size: pagination.size,
     });
   });
 

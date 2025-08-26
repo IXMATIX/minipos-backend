@@ -18,6 +18,8 @@ import { RequestWithUser } from 'src/common/interfaces/request-with-user.interfa
 import { Auth } from 'src/auth/auth.decorator';
 import { ResponseDeleteExpenseDto } from './dto/response-delete-expense.dto';
 import { FilterExpenseDto } from './dto/filter-expense.dto';
+import { PaginationDto } from 'src/pagination/dto/pagination.dto';
+import { ExpensePaginationResponseDto } from './dto/response-expense-pagination.dto';
 
 @Auth()
 @Controller('expenses')
@@ -40,15 +42,21 @@ export class ExpensesController {
   @ApiResponse({
     status: 201,
     description: 'List of expenses',
-    type: [ResponseExpenseDto],
+    type: ExpensePaginationResponseDto,
   })
   @Get()
-  async findAll(@Req() req: RequestWithUser, @Query() query: FilterExpenseDto) {
+  async findAll(
+    @Req() req: RequestWithUser,
+    @Query() query: FilterExpenseDto,
+    @Query() pagination: PaginationDto,
+  ) {
     const { startDate, endDate } = query;
     return this.expensesService.findAll({
       userId: req.user.id,
       startDate,
       endDate,
+      page: pagination.page,
+      size: pagination.size,
     });
   }
   @Get('latest')

@@ -20,7 +20,8 @@ import { SaleResponseDto } from './dto/sale-response.dto';
 import { DeleteSaleResponseDto } from './dto/delete-sale-response.dto';
 import { Auth } from 'src/auth/auth.decorator';
 import { FilterSalesDto } from './dto/filter-sales.dto';
-
+import { PaginationDto } from '../pagination/dto/pagination.dto';
+import { SalePaginationResponseDto } from './dto/sale-pagination-response.dto';
 @ApiTags('sales')
 @Auth()
 @Controller('sales')
@@ -40,16 +41,23 @@ export class SalesController {
   @ApiResponse({
     status: 200,
     description: 'List of user sales',
-    type: [SaleResponseDto],
+    type: SalePaginationResponseDto,
   })
   @Get()
-  findAll(@Req() req: RequestWithUser, @Query() query: FilterSalesDto) {
+  findAll(
+    @Req() req: RequestWithUser,
+    @Query() query: FilterSalesDto,
+    @Query() pagination: PaginationDto,
+  ) {
     const { startDate, endDate } = query;
+    const { page, size } = pagination;
 
     return this.salesService.findAllByUser({
       userId: req.user.id,
       startDate,
       endDate,
+      page,
+      size,
     });
   }
 
