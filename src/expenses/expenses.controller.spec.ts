@@ -6,6 +6,7 @@ import { RequestWithUser } from 'src/common/interfaces/request-with-user.interfa
 import { Request } from 'express';
 import { ForbiddenException, NotFoundException } from '@nestjs/common';
 import { FilterExpenseDto } from './dto/filter-expense.dto';
+import { PaginationDto } from '../pagination/dto/pagination.dto';
 
 const mockExpenseService = {
   create: jest.fn(),
@@ -115,6 +116,7 @@ describe('ExpensesController', () => {
     const response = await controller.findAll(
       mockRequest,
       {} as FilterExpenseDto,
+      {} as PaginationDto,
     );
 
     // ASSERT
@@ -134,6 +136,7 @@ describe('ExpensesController', () => {
     const response = await controller.findAll(
       mockRequest,
       {} as FilterExpenseDto,
+      {} as PaginationDto,
     );
 
     // ASSERT
@@ -317,11 +320,16 @@ describe('ExpensesController', () => {
       startDate: '2023-01-01',
       endDate: '2023-01-31',
     };
+    const pagination: PaginationDto = { page: 1, size: 10 };
     const result = [{ id: 1, total: 100, description: 'Test Expense' }];
     mockExpenseService.findAll.mockResolvedValue(result);
 
     // ACT
-    const response = await controller.findAll(mockRequest, filterDto);
+    const response = await controller.findAll(
+      mockRequest,
+      filterDto,
+      pagination,
+    );
 
     // ASSERT
     expect(response).toEqual(result);
@@ -329,6 +337,8 @@ describe('ExpensesController', () => {
       userId: mockRequest.user.id,
       startDate: filterDto.startDate,
       endDate: filterDto.endDate,
+      page: pagination.page,
+      size: pagination.size,
     });
   });
 
@@ -337,17 +347,24 @@ describe('ExpensesController', () => {
     const filterDto: FilterExpenseDto = {
       startDate: '2023-01-01',
     };
+    const pagination: PaginationDto = { page: 1, size: 10 };
     const result = [{ id: 1, total: 100, description: 'Test Expense' }];
     mockExpenseService.findAll.mockResolvedValue(result);
 
     // ACT
-    const response = await controller.findAll(mockRequest, filterDto);
+    const response = await controller.findAll(
+      mockRequest,
+      filterDto,
+      pagination,
+    );
 
     // ASSERT
     expect(response).toEqual(result);
     expect(mockExpenseService.findAll).toHaveBeenCalledWith({
       userId: mockRequest.user.id,
       startDate: filterDto.startDate,
+      page: pagination.page,
+      size: pagination.size,
     });
   });
   it('should filter expenses by end date only', async () => {
@@ -355,17 +372,24 @@ describe('ExpensesController', () => {
     const filterDto: FilterExpenseDto = {
       endDate: '2023-01-31',
     };
+    const pagination: PaginationDto = { page: 1, size: 10 };
     const result = [{ id: 1, total: 100, description: 'Test Expense' }];
     mockExpenseService.findAll.mockResolvedValue(result);
 
     // ACT
-    const response = await controller.findAll(mockRequest, filterDto);
+    const response = await controller.findAll(
+      mockRequest,
+      filterDto,
+      pagination,
+    );
 
     // ASSERT
     expect(response).toEqual(result);
     expect(mockExpenseService.findAll).toHaveBeenCalledWith({
       userId: mockRequest.user.id,
       endDate: filterDto.endDate,
+      page: pagination.page,
+      size: pagination.size,
     });
   });
 });
