@@ -35,8 +35,10 @@ export class SalesService {
     userId: number;
     startDate?: string;
     endDate?: string;
+    page?: number;
+    size?: number;
   }) {
-    const { userId, startDate, endDate } = params;
+    const { userId, startDate, endDate, page = 1, size = 10 } = params;
 
     const where: FindOptionsWhere<Sale> = {
       user: { id: userId },
@@ -50,7 +52,28 @@ export class SalesService {
       where.date = LessThanOrEqual(endDate);
     }
 
-    return this.salesRepository.find({ where });
+    const [items, total] = await this.salesRepository.findAndCount({
+      where,
+      take: size,
+      skip: (page - 1) * size,
+      order: { date: 'DESC' },
+    });
+
+    const totalPages = Math.ceil(total / size);
+
+    return {
+      data: items,
+      pagination: {
+        current_page: page,
+        page_size: size,
+        total_records: total,
+        total_pages: totalPages,
+        next_page: page < totalPages ? page + 1 : null,
+        prev_page: page > 1 ? page - 1 : null,
+        has_next: page < totalPages,
+        has_prev: page > 1,
+      },
+    };
   }
 
   async findLatestByUser(userId: number, limit = 10) {

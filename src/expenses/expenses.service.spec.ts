@@ -15,6 +15,7 @@ const mockExpenseRepository = {
   save: jest.fn(),
   update: jest.fn(),
   delete: jest.fn(),
+  findAndCount: jest.fn(),
 };
 
 const mockUserRepository = {
@@ -84,28 +85,88 @@ describe('ExpensesService', () => {
   });
 
   it('should return all expenses', async () => {
-    const result = [{ id: 1, amount: 100, description: 'Test Expense' }];
-    mockExpenseRepository.find.mockResolvedValue(result);
+    const expenses = [{ id: 1, amount: 100, description: 'Test Expense' }];
 
-    expect(await service.findAll({ userId: 1 })).toEqual(result);
-    expect(mockExpenseRepository.find).toHaveBeenCalled();
+    mockExpenseRepository.findAndCount.mockResolvedValue([
+      expenses,
+      expenses.length,
+    ]);
+
+    const result = await service.findAll({ userId: 1 });
+
+    expect(result).toEqual({
+      data: expenses,
+      pagination: {
+        current_page: 1,
+        page_size: 10,
+        total_records: expenses.length,
+        total_pages: 1,
+        has_next: false,
+        has_prev: false,
+        next_page: null,
+        prev_page: null,
+      },
+    });
+
+    expect(mockExpenseRepository.findAndCount).toHaveBeenCalledWith({
+      where: { user: { id: 1 } },
+      order: { id: 'DESC' },
+      take: 10,
+      skip: 0,
+    });
   });
 
   it('should return empty array if user has no expenses', async () => {
-    mockExpenseRepository.find.mockResolvedValue([]);
+    mockExpenseRepository.findAndCount.mockResolvedValue([[], 0]);
+
     const result = await service.findAll({ userId: 999 });
-    expect(result).toEqual([]);
-    expect(mockExpenseRepository.find).toHaveBeenCalledWith({
+
+    expect(result).toEqual({
+      data: [],
+      pagination: {
+        current_page: 1,
+        page_size: 10,
+        total_records: 0,
+        total_pages: 0,
+        has_next: false,
+        has_prev: false,
+        next_page: null,
+        prev_page: null,
+      },
+    });
+
+    expect(mockExpenseRepository.findAndCount).toHaveBeenCalledWith({
       where: { user: { id: 999 } },
+      order: { id: 'DESC' },
+      take: 10,
+      skip: 0,
     });
   });
 
   it('should return empty array if another user has no expenses', async () => {
-    mockExpenseRepository.find.mockResolvedValue([]);
+    mockExpenseRepository.findAndCount.mockResolvedValue([[], 0]);
+
     const result = await service.findAll({ userId: 2 });
-    expect(result).toEqual([]);
-    expect(mockExpenseRepository.find).toHaveBeenCalledWith({
+
+    expect(result).toEqual({
+      data: [],
+      pagination: {
+        current_page: 1,
+        page_size: 10,
+        total_records: 0,
+        total_pages: 0,
+        has_next: false,
+        has_prev: false,
+        next_page: null,
+        prev_page: null,
+      },
+    });
+
+    expect(mockExpenseRepository.findAndCount).toHaveBeenCalledWith({
       where: { user: { id: 2 } },
+      order: { id: 'DESC' },
+      take: 10,
+      skip: 0,
     });
   });
 
@@ -220,7 +281,10 @@ describe('ExpensesService', () => {
       { id: 2, date: '2023-01-20', user: { id: userId } },
     ];
 
-    mockExpenseRepository.find.mockResolvedValue(expenses);
+    mockExpenseRepository.findAndCount.mockResolvedValue([
+      expenses,
+      expenses.length,
+    ]);
 
     const result = await service.findAll({
       userId,
@@ -228,13 +292,29 @@ describe('ExpensesService', () => {
       endDate,
     });
 
-    expect(mockExpenseRepository.find).toHaveBeenCalledWith({
+    expect(mockExpenseRepository.findAndCount).toHaveBeenCalledWith({
       where: {
         user: { id: userId },
         date: Between(startDate, endDate),
       },
+      order: { id: 'DESC' },
+      take: 10,
+      skip: 0,
     });
-    expect(result).toEqual(expenses);
+
+    expect(result).toEqual({
+      data: expenses,
+      pagination: {
+        current_page: 1,
+        page_size: 10,
+        total_records: expenses.length,
+        total_pages: 1,
+        has_next: false,
+        has_prev: false,
+        next_page: null,
+        prev_page: null,
+      },
+    });
   });
 
   it('should filter expenses by start date', async () => {
@@ -245,20 +325,39 @@ describe('ExpensesService', () => {
       { id: 2, date: '2023-01-20', user: { id: userId } },
     ];
 
-    mockExpenseRepository.find.mockResolvedValue(expenses);
+    mockExpenseRepository.findAndCount.mockResolvedValue([
+      expenses,
+      expenses.length,
+    ]);
 
     const result = await service.findAll({
       userId,
       startDate,
     });
 
-    expect(mockExpenseRepository.find).toHaveBeenCalledWith({
+    expect(mockExpenseRepository.findAndCount).toHaveBeenCalledWith({
       where: {
         user: { id: userId },
         date: MoreThanOrEqual(startDate),
       },
+      order: { id: 'DESC' },
+      take: 10,
+      skip: 0,
     });
-    expect(result).toEqual(expenses);
+
+    expect(result).toEqual({
+      data: expenses,
+      pagination: {
+        current_page: 1,
+        page_size: 10,
+        total_records: expenses.length,
+        total_pages: 1,
+        has_next: false,
+        has_prev: false,
+        next_page: null,
+        prev_page: null,
+      },
+    });
   });
 
   it('should filter expenses by end date', async () => {
@@ -266,23 +365,42 @@ describe('ExpensesService', () => {
     const userId = 1;
     const expenses = [
       { id: 1, date: '2023-01-15', user: { id: userId } },
-      { id: 2, date:'2023-01-20', user: { id: userId } },
+      { id: 2, date: '2023-01-20', user: { id: userId } },
     ];
 
-    mockExpenseRepository.find.mockResolvedValue(expenses);
+    mockExpenseRepository.findAndCount.mockResolvedValue([
+      expenses,
+      expenses.length,
+    ]);
 
     const result = await service.findAll({
       userId,
       endDate,
     });
 
-    expect(mockExpenseRepository.find).toHaveBeenCalledWith({
+    expect(mockExpenseRepository.findAndCount).toHaveBeenCalledWith({
       where: {
         user: { id: userId },
         date: LessThanOrEqual(endDate),
       },
+      order: { id: 'DESC' },
+      take: 10,
+      skip: 0,
     });
-    expect(result).toEqual(expenses);
+
+    expect(result).toEqual({
+      data: expenses,
+      pagination: {
+        current_page: 1,
+        page_size: 10,
+        total_records: expenses.length,
+        total_pages: 1,
+        has_next: false,
+        has_prev: false,
+        next_page: null,
+        prev_page: null,
+      },
+    });
   });
 
   it('should filter with invalid date range', async () => {
@@ -290,7 +408,7 @@ describe('ExpensesService', () => {
     const endDate = '2023-01-01';
     const userId = 1;
 
-    mockExpenseRepository.find.mockResolvedValue([]);
+    mockExpenseRepository.findAndCount.mockResolvedValue([[], 0]);
 
     const result = await service.findAll({
       userId,
@@ -298,12 +416,28 @@ describe('ExpensesService', () => {
       endDate,
     });
 
-    expect(mockExpenseRepository.find).toHaveBeenCalledWith({
+    expect(mockExpenseRepository.findAndCount).toHaveBeenCalledWith({
       where: {
         user: { id: userId },
         date: Between(startDate, endDate),
       },
+      order: { id: 'DESC' },
+      take: 10,
+      skip: 0,
     });
-    expect(result).toEqual([]);
+
+    expect(result).toEqual({
+      data: [],
+      pagination: {
+        current_page: 1,
+        page_size: 10,
+        total_records: 0,
+        total_pages: 0,
+        has_next: false,
+        has_prev: false,
+        next_page: null,
+        prev_page: null,
+      },
+    });
   });
 });
