@@ -1,20 +1,24 @@
+import { IsOptional, Max, Min } from 'class-validator';
+import { Type } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
-import { IsOptional, IsPositive, Min } from 'class-validator';
 
 export class PaginationDto {
   @ApiProperty({
-    description: 'Number of items to return',
+    description: 'Page number (starting from 1)',
+    default: 1,
+  })
+  @IsOptional()
+  @Type(() => Number)
+  @Min(1)
+  page: number = 1;
+
+  @ApiProperty({
+    description: 'Number of items per page',
     default: 10,
   })
   @IsOptional()
-  @IsPositive()
-  limit?: number;
-
-  @ApiProperty({
-    description: 'Number of items to skip',
-    default: 0,
-  })
-  @IsOptional()
-  @Min(0)
-  offset?: number;
+  @Type(() => Number)
+  @Min(1)
+  @Max(100)
+  size: number = 20;
 }
