@@ -35,10 +35,10 @@ export class SalesService {
     userId: number;
     startDate?: string;
     endDate?: string;
-    limit?: number;
-    offset?: number;
+    page?: number;
+    size?: number;
   }) {
-    const { userId, startDate, endDate, limit = 10, offset = 0 } = params;
+    const { userId, startDate, endDate, page = 1, size = 10 } = params;
 
     const where: FindOptionsWhere<Sale> = {
       user: { id: userId },
@@ -54,16 +54,25 @@ export class SalesService {
 
     const [items, total] = await this.salesRepository.findAndCount({
       where,
-      take: limit,
-      skip: offset,
+      take: size,
+      skip: (page - 1) * size,
       order: { date: 'DESC' },
     });
 
+    const totalPages = Math.ceil(total / size);
+
     return {
-      total,
-      limit,
-      offset,
-      items,
+      data: items,
+      pagination: {
+        current_page: page,
+        page_size: size,
+        total_records: total,
+        total_pages: totalPages,
+        next_page: page < totalPages ? page + 1 : null,
+        prev_page: page > 1 ? page - 1 : null,
+        has_next: page < totalPages,
+        has_prev: page > 1,
+      },
     };
   }
 
