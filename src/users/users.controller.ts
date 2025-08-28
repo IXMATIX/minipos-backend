@@ -1,4 +1,12 @@
-import { Controller, Post, Body, UseGuards, Req, Get } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  UseGuards,
+  Req,
+  Get,
+  Logger,
+} from '@nestjs/common';
 import { AuthService } from '../auth/auth.service';
 import { UsersService } from './users.service';
 import { LoginDto } from '../auth/dto/login.dto';
@@ -12,6 +20,7 @@ import { ApiBearerAuth, ApiResponse } from '@nestjs/swagger';
 
 @Controller('users')
 export class UsersController {
+  private readonly logger = new Logger(UsersController.name);
   constructor(
     private readonly authService: AuthService,
     private readonly usersService: UsersService,
@@ -29,6 +38,7 @@ export class UsersController {
     @Req() req: { user: { id: string } },
   ): Promise<UserResponseDto> {
     const userId = Number(req.user.id);
+    this.logger.debug(`getCurrentUser called — userId=${userId}`);
     const user = await this.usersService.findById(userId);
     return plainToInstance(UserResponseDto, user, {
       excludeExtraneousValues: true,
@@ -42,6 +52,7 @@ export class UsersController {
   })
   @Post('login')
   async login(@Body() loginDto: LoginDto) {
+    this.logger.debug(`login called — username=${loginDto.email}`);
     return this.authService.login(loginDto);
   }
 
@@ -52,6 +63,7 @@ export class UsersController {
   })
   @Post('register')
   async register(@Body() createUserDto: CreateUserDto) {
+    this.logger.debug(`register called — username=${createUserDto.email}`);
     return this.usersService.create(createUserDto);
   }
 }
