@@ -9,6 +9,7 @@ import {
   Req,
   ParseIntPipe,
   Query,
+  Logger,
 } from '@nestjs/common';
 import { SalesService } from './sales.service';
 import { CreateSaleDto } from './dto/create-sale.dto';
@@ -26,6 +27,7 @@ import { SalePaginationResponseDto } from './dto/sale-pagination-response.dto';
 @Auth()
 @Controller('sales')
 export class SalesController {
+  private readonly logger = new Logger(SalesController.name);
   constructor(private readonly salesService: SalesService) {}
 
   @ApiResponse({
@@ -35,6 +37,9 @@ export class SalesController {
   })
   @Post()
   create(@Body() createSaleDto: CreateSaleDto, @Req() req: RequestWithUser) {
+    this.logger.debug(
+      `create sale called — userId=${req.user.id}, amount=${createSaleDto.amount}`,
+    );
     return this.salesService.create(createSaleDto, req.user.id);
   }
 
@@ -52,6 +57,10 @@ export class SalesController {
     const { startDate, endDate } = query;
     const { page, size } = pagination;
 
+    this.logger.debug(
+      `findAll sales called — userId=${req.user.id}, startDate=${startDate}, endDate=${endDate}, page=${page}, size=${size}`,
+    );
+
     return this.salesService.findAllByUser({
       userId: req.user.id,
       startDate,
@@ -68,6 +77,9 @@ export class SalesController {
   })
   @Get('latest')
   getLatestSales(@Req() req: RequestWithUser, @Query('limit') limit?: number) {
+    this.logger.debug(
+      `getLatestSales called — userId=${req.user.id}, limit=${limit}`,
+    );
     return this.salesService.findLatestByUser(req.user.id, limit);
   }
 
@@ -78,6 +90,9 @@ export class SalesController {
   })
   @Get(':id')
   findOne(@Param('id', ParseIntPipe) id: number, @Req() req: RequestWithUser) {
+    this.logger.debug(
+      `findOne sale called — userId=${req.user.id}, saleId=${id}`,
+    );
     return this.salesService.findOne(id, req.user.id);
   }
 
@@ -92,6 +107,9 @@ export class SalesController {
     @Body() updateSaleDto: UpdateSaleDto,
     @Req() req: RequestWithUser,
   ) {
+    this.logger.debug(
+      `update sale called — userId=${req.user.id}, saleId=${id}, amount=${updateSaleDto.amount}`,
+    );
     return this.salesService.update(id, updateSaleDto, req.user.id);
   }
 
@@ -105,6 +123,9 @@ export class SalesController {
     @Param('id', ParseIntPipe) id: number,
     @Req() req: RequestWithUser,
   ) {
+    this.logger.debug(
+      `remove sale called — userId=${req.user.id}, saleId=${id}`,
+    );
     await this.salesService.remove(id, req.user.id);
     return { message: 'Sale deleted successfully' };
   }

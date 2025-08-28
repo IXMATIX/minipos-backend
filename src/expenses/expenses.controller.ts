@@ -8,6 +8,7 @@ import {
   Delete,
   Req,
   Query,
+  Logger,
 } from '@nestjs/common';
 import { ExpensesService } from './expenses.service';
 import { CreateExpenseDto } from './dto/create-expense.dto';
@@ -24,6 +25,7 @@ import { ExpensePaginationResponseDto } from './dto/response-expense-pagination.
 @Auth()
 @Controller('expenses')
 export class ExpensesController {
+  private readonly logger = new Logger(ExpensesController.name);
   constructor(private readonly expensesService: ExpensesService) {}
 
   @ApiResponse({
@@ -36,11 +38,12 @@ export class ExpensesController {
     @Body() createExpenseDto: CreateExpenseDto,
     @Req() req: RequestWithUser,
   ) {
+    this.logger.log(`Creating expense for user ID: ${req.user.id}`);
     return this.expensesService.create(createExpenseDto, req.user.id);
   }
 
   @ApiResponse({
-    status: 201,
+    status: 200,
     description: 'List of expenses',
     type: ExpensePaginationResponseDto,
   })
@@ -50,6 +53,7 @@ export class ExpensesController {
     @Query() query: FilterExpenseDto,
     @Query() pagination: PaginationDto,
   ) {
+    this.logger.log(`Fetching expenses for user ID: ${req.user.id}`);
     const { startDate, endDate } = query;
     return this.expensesService.findAll({
       userId: req.user.id,
@@ -61,6 +65,9 @@ export class ExpensesController {
   }
   @Get('latest')
   findLatest(@Req() req: RequestWithUser, @Query('limit') limit?: number) {
+    this.logger.log(
+      `Fetching latest expenses for user ID: ${req.user.id} with limit: ${limit}`,
+    );
     return this.expensesService.findLatestByUser(req.user.id, limit);
   }
   @ApiResponse({
@@ -70,6 +77,7 @@ export class ExpensesController {
   })
   @Get(':id')
   findOne(@Param('id') id: string, @Req() req: RequestWithUser) {
+    this.logger.log(`Fetching expense ID: ${id} for user ID: ${req.user.id}`);
     return this.expensesService.findOne(+id, req.user.id);
   }
 
@@ -84,6 +92,7 @@ export class ExpensesController {
     @Body() updateExpenseDto: UpdateExpenseDto,
     @Req() req: RequestWithUser,
   ) {
+    this.logger.log(`Updating expense ID: ${id} for user ID: ${req.user.id} `);
     return this.expensesService.update({
       id: +id,
       updateExpenseDto,
@@ -98,6 +107,7 @@ export class ExpensesController {
   })
   @Delete(':id')
   async remove(@Param('id') id: string, @Req() req: RequestWithUser) {
+    this.logger.log(`Deleting expense ID: ${id} for user ID: ${req.user.id}`);
     await this.expensesService.remove(+id, req.user.id);
     return { message: 'Expense deleted successfully' };
   }

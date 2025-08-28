@@ -46,7 +46,7 @@ describe('ExpensesController', () => {
 
   it('should create an expense', async () => {
     // ARRANGE
-    const fixedDate = new Date('2023-01-01T00:00:00Z');
+
     const createExpenseDto = {
       total: 100,
       description: 'Test Expense',
